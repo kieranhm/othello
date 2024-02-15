@@ -89,9 +89,14 @@ class AlphaBetaPlayer(Player):
         # type:(board) -> (float)
         value = 0
         if self.eval_type == 0:
-            value = board.count_score(self.symbol) - board.count_score(self.oppSym)
+            value = board.count_score(self.flip_symbol(self.oppSym)) - board.count_score(self.oppSym)
         elif self.eval_type == 1:
-            value = 1
+            value = 0
+            for c in range (0, self.cols):
+                for r in range(0, self.rows):
+                    if board.is_cell_empty(c, r) and board.is_legal_move(c, r, self.flip_symbol(self.oppSym)):
+                        value += 1
+            return value
         elif self.eval_type == 2:
             value = 2
         return value
@@ -107,8 +112,6 @@ class AlphaBetaPlayer(Player):
                     possible_successor = board.cloneBoard()
                     possible_successor.play_move(c, r, player_symbol)
                     successors.append(possible_successor)
-                    #do something
-                    continue
         return successors 
 
 
