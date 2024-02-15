@@ -103,7 +103,10 @@ class AlphaBetaPlayer(Player):
         successors = []
         for c in range (0, self.cols):
             for r in range (0, self.rows):
-                if self.is_cell_empty(c, r) and self.is_legal_move(c, r, player_symbol):
+                if board.is_cell_empty(c, r) and board.is_legal_move(c, r, player_symbol):
+                    possible_successor = board.cloneBoard()
+                    possible_successor.play_move(c, r, player_symbol)
+                    successors.append(possible_successor)
                     #do something
                     continue
         return successors 
