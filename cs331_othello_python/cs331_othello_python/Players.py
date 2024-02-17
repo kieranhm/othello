@@ -80,27 +80,29 @@ class AlphaBetaPlayer(Player):
         #a modified max value designed to return the board
         #makes getting the move easier
         #and I can still get the value
-        if self.terminal_value(board) == 0:
+        if self.terminal_state(board) == True:
             return board
         maxBoard = board
-        for child in board.children:
-            child.children = self.get_successors(child, self.oppSym)
+        for child in self.get_successors(board,self.symbol):
             minChild = self.getminBoard(child, a, b)
             if minChild.value > maxBoard.value:
+                print(maxBoard)
+                print(minChild)
                 maxBoard = minChild
+                print(maxBoard)
             if maxBoard.value > b:
                 return maxBoard
             a = max(a, maxBoard.value)
         return maxBoard
     
     def getminBoard(self, board, a, b):
-        #a modified max value designed to return the board
+        #a modified min value designed to return the board
         #makes getting the move easier
         #and I can still get the value
-        if self.terminal_value(board) == 0:
+        if self.terminal_state(board) == True:
             return board
         minBoard = board
-        for child in board.children:
+        for child in self.get_successors(board,self.oppSym):
             child.children = self.get_successors(child, self.symbol)
             maxChild = self.getmaxBoard(child, a, b)
             if maxChild.value < minBoard.value:
@@ -113,13 +115,13 @@ class AlphaBetaPlayer(Player):
     def alphabeta(self, board):
         # Write minimax function here using eval_board and get_successors
         # type:(board) -> (int, int)
-        board.children = self.get_successors(board, self.symbol)
         if board.value == None:
             board.value = self.eval_board(board)
         maxBoard = self.getmaxBoard(board, float('-inf'), float('inf'))
+        print(board.value)
         board.value = maxBoard.value
-        print(board)
-        print(maxBoard)
+        print(board.value)
+        print(maxBoard.move)
         return maxBoard.move
 
     def eval_board(self, board):
