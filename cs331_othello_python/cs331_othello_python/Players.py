@@ -76,32 +76,56 @@ class AlphaBetaPlayer(Player):
         else:
             return "X"
     
-    def maxValue(self, board, a, b):
-        if self.terminal_state(board):
-            return board.value
-        v = float('-inf')
-        for successor in self.get_successors(board, self.symbol):
-            v = max(v, self.minValue(successor, a, b))
-            if v >= b:
-                return v
-            a = max(a, v)
-        return v 
+    def getmaxBoard(self, board, a, b):
+        #a modified max value designed to return the board
+        #makes getting the move easier
+        #and I can still get the value
+        if self.terminal_state(board) == True:
+            return board
+        board.children = self.get_successors(board,self.symbol)
+        if len(board.children) == 0:
+            return board
+        maxBoard = None
+        maxValue = float('-inf')
+        for child in board.children:
+            minChild = self.getminBoard(child, a, b)
+            if minChild.value > maxValue:
+                maxBoard = minChild
+                maxValue = minChild.value
+            if maxValue > b:
+                return maxBoard
+            a = max(a, maxValue)
+        return maxBoard
     
-    def minValue(self, board, a, b):
-        if self.terminal_state(board):
-            return board.value
-        v = float('inf')
-        for successor in self.get_successors(board, self.oppSym):
-            v = min(v, self.maxValue(successor, a, b))
-            if v <= a:
-                return v
-            b = min(b, v)
-        return v 
+    def getminBoard(self, board, a, b):
+        #a modified min value designed to return the board
+        #makes getting the move easier
+        #and I can still get the value
+        if self.terminal_state(board) == True:
+            return board
+        board.children = self.get_successors(board,self.oppSym)
+        if len(board.children) == 0:
+            return board
+        minBoard = None
+        minValue = float('inf')
+        for child in board.children:
+            child.children = self.get_successors(child, self.symbol)
+            maxChild = self.getmaxBoard(child, a, b)
+            if maxChild.value < minValue:
+                minBoard = maxChild
+            if minValue < a:
+                return minBoard
+            b = min(b, minValue)
+        return minBoard
 
     def alphabeta(self, board):
         # Write minimax function here using eval_board and get_successors
         # type:(board) -> (int, int)
-        v = self.maxValue(board, float('-inf', float('inf')))
+        if board.value == None:
+            board.value = self.eval_board(board)
+        maxBoard = self.getmaxBoard(board, float('-inf'), float('inf'))
+        board.value = maxBoard.value
+        return maxBoard.move
 
     def eval_board(self, board):
         # Write eval function here
