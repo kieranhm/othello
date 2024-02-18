@@ -76,56 +76,40 @@ class AlphaBetaPlayer(Player):
         else:
             return "X"
     
-    def getmaxBoard(self, board, a, b):
-        #a modified max value designed to return the board
-        #makes getting the move easier
-        #and I can still get the value
-        if self.terminal_state(board) == True:
-            return board
-        board.children = self.get_successors(board,self.symbol)
-        if len(board.children) == 0:
-            return board
-        maxBoard = None
-        maxValue = float('-inf')
-        for child in board.children:
-            minChild = self.getminBoard(child, a, b)
-            if minChild.value > maxValue:
-                maxBoard = minChild
-                maxValue = minChild.value
-            if maxValue > b:
-                return maxBoard
-            a = max(a, maxValue)
-        return maxBoard
+    def maxValue(self, board, a, b):
+        if self.terminal_state(board):
+            return self.terminal_value(board)
+        v = float('-inf')
+        for successor in self.get_successors(board, self.symbol):
+            v = max(v, self.minValue(successor, a, b))
+            if v >= b:
+                board.value = v
+                return v
+            a = max(a, v)
+        board.value = v
+        return v 
     
-    def getminBoard(self, board, a, b):
-        #a modified min value designed to return the board
-        #makes getting the move easier
-        #and I can still get the value
-        if self.terminal_state(board) == True:
-            return board
-        board.children = self.get_successors(board,self.oppSym)
-        if len(board.children) == 0:
-            return board
-        minBoard = None
-        minValue = float('inf')
-        for child in board.children:
-            child.children = self.get_successors(child, self.symbol)
-            maxChild = self.getmaxBoard(child, a, b)
-            if maxChild.value < minValue:
-                minBoard = maxChild
-            if minValue < a:
-                return minBoard
-            b = min(b, minValue)
-        return minBoard
+    def minValue(self, board, a, b):
+        if self.terminal_state(board):
+            return self.terminal_value(board)
+        v = float('inf')
+        for successor in self.get_successors(board, self.symbol):
+            v = min(v, self.maxValue(successor, a, b))
+            if v <= a:
+                board.value = v
+                return v
+            b = min(b, v)
+        board.value = v
+        return v 
 
     def alphabeta(self, board):
         # Write minimax function here using eval_board and get_successors
         # type:(board) -> (int, int)
-        if board.value == None:
-            board.value = self.eval_board(board)
-        maxBoard = self.getmaxBoard(board, float('-inf'), float('inf'))
-        board.value = maxBoard.value
-        return maxBoard.move
+        board.children = self.get_successors(board, self.symbol)
+        v = self.maxValue(board, float('-inf'), float('inf'))
+        for child in board.children:
+            if child.value == v:
+                return child.move
 
     def eval_board(self, board):
         # Write eval function here
@@ -133,13 +117,12 @@ class AlphaBetaPlayer(Player):
         value = 0
         if self.eval_type == 0:
             value = board.count_score(self.symbol) - board.count_score(self.oppSym)
+            print(board.count_score(self.symbol) - board.count_score(self.oppSym))
         elif self.eval_type == 1:
-            value = 0
             for c in range (0, self.cols):
                 for r in range(0, self.rows):
                     if board.is_cell_empty(c, r) and board.is_legal_move(c, r, self.symbol):
                         value += 1
-            return value
         elif self.eval_type == 2:
             value = 2
         return value
@@ -151,7 +134,7 @@ class AlphaBetaPlayer(Player):
         successors = []
         for c in range (0, board.cols):
             for r in range (0, board.rows):
-                if board.is_cell_empty(c, r) and board.is_legal_move(c, r, player_symbol):
+                if board.is_legal_move(c, r, player_symbol):
                     possible_successor = board.cloneOBoard()
                     possible_successor.move = (c, r)
                     possible_successor.play_move(c, r, player_symbol)
