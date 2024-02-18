@@ -154,8 +154,8 @@ class AlphaBetaPlayer(Player):
                 if board.is_cell_empty(c, r) and board.is_legal_move(c, r, player_symbol):
                     possible_successor = board.cloneOBoard()
                     possible_successor.move = (c, r)
-                    possible_successor.value = self.eval_board(possible_successor)
                     possible_successor.play_move(c, r, player_symbol)
+                    possible_successor.value = self.eval_board(possible_successor)
                     successors.append(possible_successor)
         return successors 
 
