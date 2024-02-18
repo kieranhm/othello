@@ -82,17 +82,19 @@ class AlphaBetaPlayer(Player):
         #and I can still get the value
         if self.terminal_state(board) == True:
             return board
-        maxBoard = board
-        for child in self.get_successors(board,self.symbol):
+        board.children = self.get_successors(board,self.symbol)
+        if len(board.children) == 0:
+            return board
+        maxBoard = None
+        maxValue = float('-inf')
+        for child in board.children:
             minChild = self.getminBoard(child, a, b)
-            if minChild.value > maxBoard.value:
-                print(maxBoard)
-                print(minChild)
+            if minChild.value > maxValue:
                 maxBoard = minChild
-                print(maxBoard)
-            if maxBoard.value > b:
+                maxValue = minChild.value
+            if maxValue > b:
                 return maxBoard
-            a = max(a, maxBoard.value)
+            a = max(a, maxValue)
         return maxBoard
     
     def getminBoard(self, board, a, b):
@@ -101,15 +103,19 @@ class AlphaBetaPlayer(Player):
         #and I can still get the value
         if self.terminal_state(board) == True:
             return board
-        minBoard = board
-        for child in self.get_successors(board,self.oppSym):
+        board.children = self.get_successors(board,self.oppSym)
+        if len(board.children) == 0:
+            return board
+        minBoard = None
+        minValue = float('inf')
+        for child in board.children:
             child.children = self.get_successors(child, self.symbol)
             maxChild = self.getmaxBoard(child, a, b)
-            if maxChild.value < minBoard.value:
+            if maxChild.value < minValue:
                 minBoard = maxChild
-            if minBoard.value < a:
+            if minValue < a:
                 return minBoard
-            b = min(a, minBoard.value)
+            b = min(b, minValue)
         return minBoard
 
     def alphabeta(self, board):
@@ -118,10 +124,7 @@ class AlphaBetaPlayer(Player):
         if board.value == None:
             board.value = self.eval_board(board)
         maxBoard = self.getmaxBoard(board, float('-inf'), float('inf'))
-        print(board.value)
         board.value = maxBoard.value
-        print(board.value)
-        print(maxBoard.move)
         return maxBoard.move
 
     def eval_board(self, board):
