@@ -101,24 +101,7 @@ class AlphaBetaPlayer(Player):
     def alphabeta(self, board):
         # Write minimax function here using eval_board and get_successors
         # type:(board) -> (int, int)
-        # Wrote a modified version of maxValue that takes boards
-        print(board)
-        board.children = self.get_successors(board, self.symbol)
-        if len(board.children) == 0:
-            return board.move
-        maxChild = None
-        maxValue = float('-inf')
-        a = float('-inf')
-        b = float('inf')
-        for child in board.children:
-            child.value = self.minValue(board, a, b)
-            if maxValue < child.value:
-                maxChild = child
-                maxValue = child.value
-            if maxValue >= b:
-                return maxChild.move
-            a = max(a, maxValue)
-        return maxChild.move
+        v = self.maxValue(board, float('-inf', float('inf')))
 
     def eval_board(self, board):
         # Write eval function here
