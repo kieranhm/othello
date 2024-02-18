@@ -95,13 +95,14 @@ class AlphaBetaPlayer(Player):
             v = min(v, self.maxValue(successor, a, b))
             if v <= a:
                 return v
-            b = min(a, v)
+            b = min(b, v)
         return v 
 
     def alphabeta(self, board):
         # Write minimax function here using eval_board and get_successors
         # type:(board) -> (int, int)
         # Wrote a modified version of maxValue that takes boards
+        print(board)
         board.children = self.get_successors(board, self.symbol)
         if len(board.children) == 0:
             return board.move
@@ -111,7 +112,6 @@ class AlphaBetaPlayer(Player):
         b = float('inf')
         for child in board.children:
             child.value = self.minValue(board, a, b)
-            print(child.value)
             if maxValue < child.value:
                 maxChild = child
                 maxValue = child.value
@@ -147,8 +147,8 @@ class AlphaBetaPlayer(Player):
                 if board.is_cell_empty(c, r) and board.is_legal_move(c, r, player_symbol):
                     possible_successor = board.cloneOBoard()
                     possible_successor.move = (c, r)
-                    possible_successor.value = self.eval_board(possible_successor)
                     possible_successor.play_move(c, r, player_symbol)
+                    possible_successor.value = self.eval_board(possible_successor)
                     successors.append(possible_successor)
         return successors 
 
