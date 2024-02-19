@@ -83,33 +83,26 @@ class AlphaBetaPlayer(Player):
         for successor in self.get_successors(board, self.symbol):
             v = max(v, self.minValue(successor, a, b))
             if v >= b:
-                board.value = v
                 return v
             a = max(a, v)
-        board.value = v
         return v 
     
     def minValue(self, board, a, b):
         if self.terminal_state(board):
             return self.terminal_value(board)
         v = float('inf')
-        for successor in self.get_successors(board, self.symbol):
+        for successor in self.get_successors(board, self.oppSym):
             v = min(v, self.maxValue(successor, a, b))
             if v <= a:
-                board.value = v
                 return v
             b = min(b, v)
-        board.value = v
         return v 
 
     def alphabeta(self, board):
         # Write minimax function here using eval_board and get_successors
         # type:(board) -> (int, int)
-        board.children = self.get_successors(board, self.symbol)
         v = self.maxValue(board, float('-inf'), float('inf'))
-        for child in board.children:
-            if child.value == v:
-                return child.move
+        return 0, 0
 
     def eval_board(self, board):
         # Write eval function here
